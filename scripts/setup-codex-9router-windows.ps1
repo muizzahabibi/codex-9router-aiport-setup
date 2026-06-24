@@ -187,9 +187,12 @@ req.end();
   $TempJs = [IO.Path]::GetTempFileName() + '.js'
   Set-Content -Encoding UTF8 -Path $TempJs -Value $NodeCode
   try {
-    $Output = node $TempJs $NineRouterApi $DataDir9R $Method $Path $PayloadBase64
+    $Output = node $TempJs $NineRouterApi $DataDir9R $Method $Path $PayloadBase64 2>&1
+    if ($LASTEXITCODE -ne 0) { throw ($Output -join [Environment]::NewLine) }
     if ([string]::IsNullOrWhiteSpace($Output)) { return $null }
-    return $Output | ConvertFrom-Json
+    $Parsed = $Output | ConvertFrom-Json
+    if ($Parsed.error) { throw $Parsed.error }
+    return $Parsed
   } finally {
     Remove-Item $TempJs -Force -ErrorAction SilentlyContinue
   }
@@ -205,37 +208,70 @@ function Backup-CodexConfig {
   }
 }
 
+
+function Get-ProviderNodeId([string]$Prefix) {
+  $Nodes = Invoke-9RouterApi GET '/api/provider-nodes'
+  $Candidates = @()
+  if ($Nodes.data.nodes) { $Candidates += @($Nodes.data.nodes) }
+  if ($Nodes.data.providerNodes) { $Candidates += @($Nodes.data.providerNodes) }
+  if ($Nodes.nodes) { $Candidates += @($Nodes.nodes) }
+  if ($Nodes.data -and ($Nodes.data -is [array])) { $Candidates += @($Nodes.data) }
+  foreach ($Node in $Candidates) {
+    if (-not $Node) { continue }
+    $NodePrefix = if ($Node.prefix) { $Node.prefix } elseif ($Node.data.prefix) { $Node.data.prefix } else { $null }
+    if (($NodePrefix -eq $Prefix) -or ($Node.id -eq $Prefix)) {
+      if ($Node.id) { return $Node.id }
+      if ($Node.data.id) { return $Node.data.id }
+    }
+  }
+  return $null
+}
+
 function Setup-AIPortProvider {
   param([string]$BaseUrl, [string]$Model, [string]$Prefix, [string]$ApiKey)
 
   Write-Step 'Upsert custom provider AIPort di 9Router...'
   $ProviderPayload = @{ name = 'AIPort'; prefix = $Prefix; baseUrl = $BaseUrl; type = 'openai-compatible'; apiType = 'chat' }
-  $Nodes = Invoke-9RouterApi GET '/api/provider-nodes'
-  $NodeList = @($Nodes.data.nodes) + @($Nodes.data.providerNodes) + @($Nodes.nodes)
-  $ExistingNode = $NodeList | Where-Object { $_ -and ($_.prefix -eq $Prefix -or $_.id -eq $Prefix -or $_.data.prefix -eq $Prefix) } | Select-Object -First 1
+  $ProviderId = Get-ProviderNodeId $Prefix
 
-  if ($ExistingNode) {
-    $ProviderId = if ($ExistingNode.id) { $ExistingNode.id } else { $ExistingNode.data.id }
+  if ($ProviderId) {
     Write-Step "Provider '$Prefix' sudah ada, update config provider."
     Invoke-9RouterApi PUT "/api/provider-nodes/$ProviderId" $ProviderPayload | Out-Null
   } else {
     Write-Step "Provider '$Prefix' belum ada, buat baru."
-    $Created = Invoke-9RouterApi POST '/api/provider-nodes' $ProviderPayload
-    $ProviderId = if ($Created.data.node.id) { $Created.data.node.id } elseif ($Created.data.id) { $Created.data.id } elseif ($Created.id) { $Created.id } else { $Prefix }
+    Invoke-9RouterApi POST '/api/provider-nodes' $ProviderPayload | Out-Null
   }
+
+  Start-Sleep -Seconds 1
+  $ProviderId = Get-ProviderNodeId $Prefix
+  if (-not $ProviderId) {
+    Fail "Provider '$Prefix' tidak ditemukan setelah create/update. Buka dashboard 9Router dan cek Custom Providers."
+  }
+  Write-Step "Provider aktif: $ProviderId"
 
   Write-Step 'Upsert koneksi API key AIPort di 9Router...'
   $Providers = Invoke-9RouterApi GET '/api/providers'
-  $ConnectionList = @($Providers.data.connections) + @($Providers.data.providers) + @($Providers.connections)
+  $ConnectionList = @()
+  if ($Providers.data.connections) { $ConnectionList += @($Providers.data.connections) }
+  if ($Providers.data.providers) { $ConnectionList += @($Providers.data.providers) }
+  if ($Providers.connections) { $ConnectionList += @($Providers.connections) }
+  if ($Providers.data -and ($Providers.data -is [array])) { $ConnectionList += @($Providers.data) }
+
   $ExistingConnection = $ConnectionList | Where-Object {
-    $_ -and (($_.provider -eq $Prefix) -or ($_.providerId -eq $Prefix) -or ($_.provider -eq $ProviderId) -or ($_.providerId -eq $ProviderId)) -and ($_.name -match 'AIPort')
+    $_ -and (($_.provider -eq $Prefix) -or ($_.providerId -eq $Prefix) -or ($_.provider -eq $ProviderId) -or ($_.providerId -eq $ProviderId) -or ($_.data.provider -eq $ProviderId)) -and (($_.name -match 'AIPort') -or ($_.data.name -match 'AIPort'))
   } | Select-Object -First 1
   if ($ExistingConnection) {
     $ConnectionId = if ($ExistingConnection.id) { $ExistingConnection.id } else { $ExistingConnection.data.id }
     Write-Step 'Koneksi AIPort lama ditemukan, hapus dulu agar tidak dobel dan key terbaru aktif.'
     try { Invoke-9RouterApi DELETE "/api/providers/$ConnectionId" | Out-Null } catch {}
   }
-  Invoke-9RouterApi POST '/api/providers' @{ provider = $ProviderId; name = 'AIPort API Key'; apiKey = $ApiKey } | Out-Null
+
+  try {
+    Invoke-9RouterApi POST '/api/providers' @{ provider = $ProviderId; name = 'AIPort API Key'; apiKey = $ApiKey } | Out-Null
+  } catch {
+    Write-Host "WARN: Koneksi pakai provider id gagal, coba fallback prefix '$Prefix'." -ForegroundColor Yellow
+    Invoke-9RouterApi POST '/api/providers' @{ provider = $Prefix; name = 'AIPort API Key'; apiKey = $ApiKey } | Out-Null
+  }
 }
 
 function New-9RouterApiKeyForCodex {
