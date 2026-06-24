@@ -46,7 +46,7 @@ Script akan meminta input:
 Jalankan di PowerShell:
 
 ```powershell
-$u='https://raw.githubusercontent.com/muizzahabibi/codex-9router-aiport-setup/main/install.ps1?cb='+[DateTimeOffset]::UtcNow.ToUnixTimeSeconds(); Set-ExecutionPolicy -Scope CurrentUser RemoteSigned -Force; iwr -UseBasicParsing $u | iex
+$r=Invoke-RestMethod -Uri 'https://api.github.com/repos/muizzahabibi/codex-9router-aiport-setup/contents/install.ps1?ref=main' -Headers @{'User-Agent'='codex-9router-aiport-setup'}; $s=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String(($r.content -replace '\s',''))); Set-ExecutionPolicy -Scope CurrentUser RemoteSigned -Force; iex $s
 ```
 
 Jika `iex` diblokir oleh kebijakan keamanan, gunakan cara download lalu jalankan:

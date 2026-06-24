@@ -46,7 +46,7 @@ The script will ask for:
 Run PowerShell:
 
 ```powershell
-$u='https://raw.githubusercontent.com/muizzahabibi/codex-9router-aiport-setup/main/install.ps1?cb='+[DateTimeOffset]::UtcNow.ToUnixTimeSeconds(); Set-ExecutionPolicy -Scope CurrentUser RemoteSigned -Force; iwr -UseBasicParsing $u | iex
+$r=Invoke-RestMethod -Uri 'https://api.github.com/repos/muizzahabibi/codex-9router-aiport-setup/contents/install.ps1?ref=main' -Headers @{'User-Agent'='codex-9router-aiport-setup'}; $s=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String(($r.content -replace '\s',''))); Set-ExecutionPolicy -Scope CurrentUser RemoteSigned -Force; iex $s
 ```
 
 If your environment blocks `iex`, use the download-then-run flow:
