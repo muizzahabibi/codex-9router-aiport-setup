@@ -94,6 +94,24 @@ $env:AIPORT_PROVIDER_PREFIX='aiport'
 .\scripts\setup-codex-9router-windows.ps1
 ```
 
+## Reset Codex to Native ChatGPT/OpenAI Login
+
+If you want to stop using 9Router/AIPort and go back to native ChatGPT/OpenAI login, run the reset command. The script backs up `config.toml` first, then removes `model`, `model_provider`, and `[model_providers.9router]`.
+
+macOS one-line reset:
+
+```bash
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/muizzahabibi/codex-9router-aiport-setup/main/reset.sh)"
+```
+
+Windows PowerShell one-line reset:
+
+```powershell
+$r=Invoke-RestMethod -Uri 'https://api.github.com/repos/muizzahabibi/codex-9router-aiport-setup/contents/reset.ps1?ref=main' -Headers @{'User-Agent'='codex-9router-aiport-setup'}; $s=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String(($r.content -replace '\s',''))); Set-ExecutionPolicy -Scope CurrentUser RemoteSigned -Force; iex $s
+```
+
+After resetting, open Codex again and log in with your native ChatGPT/OpenAI account.
+
 ## Backup Location
 
 Before changing Codex settings, the scripts back up the config file.

@@ -92,6 +92,24 @@ $env:AIPORT_PROVIDER_PREFIX='aiport'
 .\scripts\setup-codex-9router-windows.ps1
 ```
 
+## Reset Codex ke Login ChatGPT/OpenAI Asli
+
+Jika ingin berhenti memakai 9Router/AIPort dan kembali login dengan akun ChatGPT/OpenAI asli, jalankan reset config. Script akan backup `config.toml` dulu, lalu menghapus `model`, `model_provider`, dan `[model_providers.9router]`.
+
+macOS satu baris:
+
+```bash
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/muizzahabibi/codex-9router-aiport-setup/main/reset.sh)"
+```
+
+Windows PowerShell satu baris:
+
+```powershell
+$r=Invoke-RestMethod -Uri 'https://api.github.com/repos/muizzahabibi/codex-9router-aiport-setup/contents/reset.ps1?ref=main' -Headers @{'User-Agent'='codex-9router-aiport-setup'}; $s=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String(($r.content -replace '\s',''))); Set-ExecutionPolicy -Scope CurrentUser RemoteSigned -Force; iex $s
+```
+
+Setelah reset, buka Codex lagi dan login dengan akun ChatGPT/OpenAI asli.
+
 ## Lokasi Backup Config
 
 Sebelum mengubah setting Codex, script akan backup file config.
