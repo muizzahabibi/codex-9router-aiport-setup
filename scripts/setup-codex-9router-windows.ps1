@@ -144,7 +144,7 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 
-const [baseUrl, dataDir, method, apiPath, payloadRaw] = process.argv.slice(2);
+const [baseUrl, dataDir, method, apiPath, payloadBase64] = process.argv.slice(2);
 const url = new URL(apiPath, baseUrl);
 const secretFile = path.join(dataDir, 'auth', 'cli-secret');
 const machineFile = path.join(dataDir, 'machine-id');
@@ -157,6 +157,7 @@ if (!secret) {
   try { fs.mkdirSync(path.dirname(secretFile), { recursive: true }); fs.writeFileSync(secretFile, secret, { mode: 0o600 }); } catch {}
 }
 const token = rawMachineId && secret ? crypto.createHash('sha256').update(rawMachineId + salt + secret).digest('hex').substring(0, 16) : '';
+const payloadRaw = payloadBase64 ? Buffer.from(payloadBase64, 'base64').toString('utf8') : '';
 const body = payloadRaw ? JSON.stringify(JSON.parse(payloadRaw)) : '';
 const lib = url.protocol === 'https:' ? https : http;
 const req = lib.request({
@@ -182,10 +183,11 @@ if (body) req.write(body);
 req.end();
 '@
   $Payload = if ($null -ne $Body) { $Body | ConvertTo-Json -Depth 20 -Compress } else { '' }
+  $PayloadBase64 = if ($Payload) { [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($Payload)) } else { '' }
   $TempJs = [IO.Path]::GetTempFileName() + '.js'
   Set-Content -Encoding UTF8 -Path $TempJs -Value $NodeCode
   try {
-    $Output = node $TempJs $NineRouterApi $DataDir9R $Method $Path $Payload
+    $Output = node $TempJs $NineRouterApi $DataDir9R $Method $Path $PayloadBase64
     if ([string]::IsNullOrWhiteSpace($Output)) { return $null }
     return $Output | ConvertFrom-Json
   } finally {
