@@ -1,62 +1,62 @@
-# Setup Codex + 9Router + AIPort
+# Codex + 9Router + AIPort Setup
 
-Script interaktif untuk menjalankan Codex lewat 9Router lokal dengan provider AIPort yang kompatibel OpenAI API.
+Interactive setup scripts for running Codex through a local 9Router instance with an AIPort OpenAI-compatible provider.
 
-Versi English tersedia di [README_EN.md](README_EN.md).
+Indonesian documentation is available in [README.md](README.md).
 
-## Fungsi Script
+## What This Does
 
-- Cek dan install Node.js/npm jika belum ada.
-- Cek dan install `9router` global via npm jika belum ada.
-- Menjalankan 9Router lokal di `127.0.0.1:20128`.
-- Setup AIPort sebagai provider OpenAI-compatible di 9Router.
-- Setup Codex agar memakai 9Router lokal.
-- Backup config Codex sebelum diganti.
-- Mencegah provider/API key dobel dengan pola update/rotasi.
-- Menambahkan autostart + autorestart:
+- Checks and installs Node.js/npm when missing.
+- Checks and installs `9router` globally via npm when missing.
+- Runs 9Router locally on `127.0.0.1:20128`.
+- Configures AIPort as an OpenAI-compatible provider in 9Router.
+- Configures Codex to use local 9Router.
+- Backs up the Codex config before applying changes.
+- Avoids duplicate provider/API key entries by updating or rotating existing entries.
+- Adds autostart + autorestart:
   - macOS: LaunchAgent
   - Windows: Scheduled Task
 
-Default konfigurasi:
+Default settings:
 
 | Setting | Default |
 |---|---|
 | AIPort base URL | `https://aiport.id/v1` |
 | Model | `deepseek-v4-flash` |
-| Prefix 9Router | `aiport` |
-| Model Codex | `aiport/deepseek-v4-flash` |
-| Endpoint lokal | `http://127.0.0.1:20128/v1` |
+| 9Router prefix | `aiport` |
+| Codex model | `aiport/deepseek-v4-flash` |
+| Local endpoint | `http://127.0.0.1:20128/v1` |
 
-## Install macOS Satu Baris
+## macOS One-Line Install
 
 ```bash
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/muizzahabibi/codex-9router-aiport-setup/main/install.sh)"
 ```
 
-Script akan meminta input:
+The script will ask for:
 
 - AIPort base URL
-- Model AIPort
-- Prefix provider 9Router
-- API key AIPort, input tersembunyi
-- Konfirmasi sebelum setup dijalankan
+- AIPort model
+- 9Router provider prefix
+- AIPort API key, hidden input
+- Final confirmation
 
-## Install Windows Satu Baris
+## Windows One-Line Install
 
-Jalankan di PowerShell:
+Run PowerShell:
 
 ```powershell
 Set-ExecutionPolicy -Scope CurrentUser RemoteSigned -Force; iwr -UseBasicParsing https://raw.githubusercontent.com/muizzahabibi/codex-9router-aiport-setup/main/install.ps1 | iex
 ```
 
-Jika `iex` diblokir oleh kebijakan keamanan, gunakan cara download lalu jalankan:
+If your environment blocks `iex`, use the download-then-run flow:
 
 ```powershell
 iwr -UseBasicParsing https://raw.githubusercontent.com/muizzahabibi/codex-9router-aiport-setup/main/scripts/setup-codex-9router-windows.ps1 -OutFile .\setup-codex-9router-windows.ps1
 .\setup-codex-9router-windows.ps1
 ```
 
-## Jalankan Manual di macOS
+## Manual macOS Run
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/muizzahabibi/codex-9router-aiport-setup/main/scripts/setup-codex-9router-macos.sh -o setup-codex-9router-macos.sh
@@ -64,7 +64,7 @@ chmod +x setup-codex-9router-macos.sh
 ./setup-codex-9router-macos.sh
 ```
 
-## Mode Non-Interaktif
+## Non-Interactive Usage
 
 macOS:
 
@@ -86,9 +86,9 @@ $env:AIPORT_PROVIDER_PREFIX='aiport'
 .\scripts\setup-codex-9router-windows.ps1
 ```
 
-## Lokasi Backup Config
+## Backup Location
 
-Sebelum mengubah setting Codex, script akan backup file config.
+Before changing Codex settings, the scripts back up the config file.
 
 macOS:
 
@@ -102,17 +102,17 @@ Windows:
 %USERPROFILE%\.codex\config.toml.bak.YYYYMMDD-HHMMSS
 ```
 
-## Kelola Autostart
+## Autostart Management
 
 ### macOS
 
-Cek service:
+Check service:
 
 ```bash
 launchctl print gui/$(id -u)/id.aiport.9router
 ```
 
-Matikan autostart:
+Disable autostart:
 
 ```bash
 launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/id.aiport.9router.plist
@@ -120,7 +120,7 @@ launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/id.aiport.9router.plist
 
 ### Windows
 
-Cek task:
+Check task:
 
 ```powershell
 Get-ScheduledTask -TaskName 'AIPort 9Router'
@@ -132,31 +132,31 @@ Stop task:
 Stop-ScheduledTask -TaskName 'AIPort 9Router'
 ```
 
-Hapus autostart:
+Remove autostart:
 
 ```powershell
 Unregister-ScheduledTask -TaskName 'AIPort 9Router' -Confirm:$false
 ```
 
-## Verifikasi
+## Verify
 
-Cek daftar model:
+List models:
 
 ```bash
 curl http://127.0.0.1:20128/v1/models
 ```
 
-Tes chat completion:
+Test chat completion:
 
 ```bash
 curl -sS http://127.0.0.1:20128/v1/chat/completions \
   -H 'Content-Type: application/json' \
-  -d '{"model":"aiport/deepseek-v4-flash","messages":[{"role":"user","content":"Jawab singkat: 2+2 berapa?"}],"max_tokens":80}'
+  -d '{"model":"aiport/deepseek-v4-flash","messages":[{"role":"user","content":"Answer briefly: what is 2+2?"}],"max_tokens":80}'
 ```
 
-## Catatan
+## Notes
 
-- Jangan commit API key.
-- Script ini tidak menyimpan API key di repo; key hanya diminta saat setup.
-- Saat pertama kali dijalankan, 9Router bisa butuh waktu lebih lama karena menyiapkan dependency runtime.
-- Jika request model gagal, cek saldo AIPort, API key, dan nama model di dashboard 9Router.
+- Do not commit API keys.
+- The scripts do not store API keys in this repository; keys are only requested during setup.
+- On first run, 9Router may take longer while preparing runtime dependencies.
+- If model requests fail, check your AIPort balance, API key, and model name in the 9Router dashboard.
