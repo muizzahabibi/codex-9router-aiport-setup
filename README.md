@@ -52,7 +52,7 @@ $r=Invoke-RestMethod -Uri 'https://api.github.com/repos/muizzahabibi/codex-9rout
 Jika command di atas masih kena cache, pakai versi pinned ini:
 
 ```powershell
-$env:GITHUB_REF='170cf3ea1df2b99952cbd46aee0635a555e1e585'; $r=Invoke-RestMethod -Uri "https://api.github.com/repos/muizzahabibi/codex-9router-aiport-setup/contents/install.ps1?ref=$env:GITHUB_REF" -Headers @{'User-Agent'='codex-9router-aiport-setup'}; $s=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String(($r.content -replace '\s',''))); Set-ExecutionPolicy -Scope CurrentUser RemoteSigned -Force; iex $s
+$env:GITHUB_REF='04fcb421a1bbc6c8f157c742e014e6e5d2331a59'; $r=Invoke-RestMethod -Uri "https://api.github.com/repos/muizzahabibi/codex-9router-aiport-setup/contents/install.ps1?ref=$env:GITHUB_REF" -Headers @{'User-Agent'='codex-9router-aiport-setup'}; $s=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String(($r.content -replace '\s',''))); Set-ExecutionPolicy -Scope CurrentUser RemoteSigned -Force; iex $s
 ```
 
 Jika `iex` diblokir oleh kebijakan keamanan, gunakan cara download lalu jalankan:
@@ -162,6 +162,7 @@ curl -sS http://127.0.0.1:20128/v1/chat/completions \
 
 ## Catatan
 
+- Jika di Windows muncul error , jalankan ulang installer terbaru. Versi terbaru membaca ulang provider ID dari 9Router sebelum membuat koneksi API key.
 - Jangan commit API key.
 - Script ini tidak menyimpan API key di repo; key hanya diminta saat setup.
 - Saat pertama kali dijalankan, 9Router bisa butuh waktu lebih lama karena menyiapkan dependency runtime.

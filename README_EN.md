@@ -54,7 +54,7 @@ $r=Invoke-RestMethod -Uri 'https://api.github.com/repos/muizzahabibi/codex-9rout
 If the command above still hits a cached script, use this pinned version:
 
 ```powershell
-$env:GITHUB_REF='170cf3ea1df2b99952cbd46aee0635a555e1e585'; $r=Invoke-RestMethod -Uri "https://api.github.com/repos/muizzahabibi/codex-9router-aiport-setup/contents/install.ps1?ref=$env:GITHUB_REF" -Headers @{'User-Agent'='codex-9router-aiport-setup'}; $s=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String(($r.content -replace '\s',''))); Set-ExecutionPolicy -Scope CurrentUser RemoteSigned -Force; iex $s
+$env:GITHUB_REF='04fcb421a1bbc6c8f157c742e014e6e5d2331a59'; $r=Invoke-RestMethod -Uri "https://api.github.com/repos/muizzahabibi/codex-9router-aiport-setup/contents/install.ps1?ref=$env:GITHUB_REF" -Headers @{'User-Agent'='codex-9router-aiport-setup'}; $s=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String(($r.content -replace '\s',''))); Set-ExecutionPolicy -Scope CurrentUser RemoteSigned -Force; iex $s
 ```
 
 If your environment blocks `iex`, use the download-then-run flow:
@@ -164,6 +164,7 @@ curl -sS http://127.0.0.1:20128/v1/chat/completions \
 
 ## Notes
 
+- If Windows shows , rerun the latest installer. The current version reloads the provider ID from 9Router before creating the API key connection.
 - Do not commit API keys.
 - The scripts do not store API keys in this repository; keys are only requested during setup.
 - On first run, 9Router may take longer while preparing runtime dependencies.
