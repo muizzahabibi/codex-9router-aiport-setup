@@ -49,6 +49,12 @@ Jalankan di PowerShell:
 $r=Invoke-RestMethod -Uri 'https://api.github.com/repos/muizzahabibi/codex-9router-aiport-setup/contents/install.ps1?ref=main' -Headers @{'User-Agent'='codex-9router-aiport-setup'}; $s=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String(($r.content -replace '\s',''))); Set-ExecutionPolicy -Scope CurrentUser RemoteSigned -Force; iex $s
 ```
 
+Jika command di atas masih kena cache, pakai versi pinned ini:
+
+```powershell
+$env:GITHUB_REF='170cf3ea1df2b99952cbd46aee0635a555e1e585'; $r=Invoke-RestMethod -Uri "https://api.github.com/repos/muizzahabibi/codex-9router-aiport-setup/contents/install.ps1?ref=$env:GITHUB_REF" -Headers @{'User-Agent'='codex-9router-aiport-setup'}; $s=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String(($r.content -replace '\s',''))); Set-ExecutionPolicy -Scope CurrentUser RemoteSigned -Force; iex $s
+```
+
 Jika `iex` diblokir oleh kebijakan keamanan, gunakan cara download lalu jalankan:
 
 ```powershell
