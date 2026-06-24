@@ -162,7 +162,7 @@ curl -sS http://127.0.0.1:20128/v1/chat/completions \
 
 ## Catatan
 
-- Jika di Windows muncul error , jalankan ulang installer terbaru. Versi terbaru membaca ulang provider ID dari 9Router sebelum membuat koneksi API key.
+- Jika di Windows muncul error `Invalid provider`, jalankan ulang installer terbaru. Versi terbaru membaca ulang provider ID dari 9Router sebelum membuat koneksi API key.
 - Jangan commit API key.
 - Script ini tidak menyimpan API key di repo; key hanya diminta saat setup.
 - Saat pertama kali dijalankan, 9Router bisa butuh waktu lebih lama karena menyiapkan dependency runtime.

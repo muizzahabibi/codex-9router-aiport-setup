@@ -164,7 +164,7 @@ curl -sS http://127.0.0.1:20128/v1/chat/completions \
 
 ## Notes
 
-- If Windows shows , rerun the latest installer. The current version reloads the provider ID from 9Router before creating the API key connection.
+- If Windows shows `Invalid provider`, rerun the latest installer. The current version reloads the provider ID from 9Router before creating the API key connection.
 - Do not commit API keys.
 - The scripts do not store API keys in this repository; keys are only requested during setup.
 - On first run, 9Router may take longer while preparing runtime dependencies.
