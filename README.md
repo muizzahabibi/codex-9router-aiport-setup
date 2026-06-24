@@ -46,7 +46,7 @@ Script akan meminta input:
 Jalankan di PowerShell:
 
 ```powershell
-Set-ExecutionPolicy -Scope CurrentUser RemoteSigned -Force; iwr -UseBasicParsing https://raw.githubusercontent.com/muizzahabibi/codex-9router-aiport-setup/main/install.ps1 | iex
+$u='https://raw.githubusercontent.com/muizzahabibi/codex-9router-aiport-setup/main/install.ps1?cb='+[DateTimeOffset]::UtcNow.ToUnixTimeSeconds(); Set-ExecutionPolicy -Scope CurrentUser RemoteSigned -Force; iwr -UseBasicParsing $u | iex
 ```
 
 Jika `iex` diblokir oleh kebijakan keamanan, gunakan cara download lalu jalankan:
