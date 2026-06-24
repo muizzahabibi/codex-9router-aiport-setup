@@ -1,6 +1,9 @@
 $ErrorActionPreference = 'Stop'
-$RepoRawBase = if ($env:REPO_RAW_BASE) { $env:REPO_RAW_BASE.TrimEnd('/') } else { 'https://raw.githubusercontent.com/muizzahabibi/codex-9router-aiport-setup/main' }
+$Repo = if ($env:GITHUB_REPO) { $env:GITHUB_REPO } else { 'muizzahabibi/codex-9router-aiport-setup' }
+$Ref = if ($env:GITHUB_REF) { $env:GITHUB_REF } else { 'main' }
 $TempFile = Join-Path $env:TEMP 'setup-codex-9router-windows.ps1'
-$CacheBust = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
-Invoke-WebRequest -UseBasicParsing -Uri "$RepoRawBase/scripts/setup-codex-9router-windows.ps1?cb=$CacheBust" -OutFile $TempFile
+$ApiUrl = "https://api.github.com/repos/$Repo/contents/scripts/setup-codex-9router-windows.ps1?ref=$Ref"
+$Response = Invoke-RestMethod -Uri $ApiUrl -Headers @{ 'User-Agent' = 'codex-9router-aiport-setup' }
+$Content = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String(($Response.content -replace '\s', '')))
+Set-Content -Encoding UTF8 -Path $TempFile -Value $Content
 & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $TempFile
