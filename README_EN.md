@@ -49,6 +49,10 @@ Run PowerShell:
 $r=Invoke-RestMethod -Uri 'https://api.github.com/repos/muizzahabibi/codex-9router-aiport-setup/contents/install.ps1?ref=main' -Headers @{'User-Agent'='codex-9router-aiport-setup'}; $s=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String(($r.content -replace '\s',''))); Set-ExecutionPolicy -Scope CurrentUser RemoteSigned -Force; iex $s
 ```
 
+If the command above still hits a cached script, use this pinned version:
+
+
+
 If your environment blocks `iex`, use the download-then-run flow:
 
 ```powershell
