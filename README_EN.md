@@ -107,7 +107,7 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/muizzahabibi/codex-9rout
 Windows PowerShell one-line reset:
 
 ```powershell
-$r=Invoke-RestMethod -Uri 'https://api.github.com/repos/muizzahabibi/codex-9router-aiport-setup/contents/reset.ps1?ref=main' -Headers @{'User-Agent'='codex-9router-aiport-setup'}; $s=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String(($r.content -replace '\s',''))); Set-ExecutionPolicy -Scope CurrentUser RemoteSigned -Force; iex $s
+iwr -UseBasicParsing 'https://raw.githubusercontent.com/muizzahabibi/codex-9router-aiport-setup/main/scripts/reset-codex-config-windows.ps1' -OutFile "$env:TEMPeset-codex-config-windows.ps1"; powershell -NoProfile -ExecutionPolicy Bypass -File "$env:TEMPeset-codex-config-windows.ps1"
 ```
 
 After resetting, open Codex again and log in with your native ChatGPT/OpenAI account.
