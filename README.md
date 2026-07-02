@@ -105,7 +105,9 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/muizzahabibi/codex-9rout
 Windows PowerShell satu baris:
 
 ```powershell
-iwr -UseBasicParsing 'https://raw.githubusercontent.com/muizzahabibi/codex-9router-aiport-setup/main/scripts/reset-codex-config-windows.ps1' -OutFile "$env:TEMPeset-codex-config-windows.ps1"; powershell -NoProfile -ExecutionPolicy Bypass -File "$env:TEMPeset-codex-config-windows.ps1"
+$f=Join-Path $env:TEMP 'reset-codex-config-windows.ps1'; iwr -UseBasicParsing 'https://raw.githubusercontent.com/muizzahabibi/codex-9router-aiport-setup/main/scripts/reset-codex-config-windows.ps1' -OutFile $f; powershell -NoProfile -ExecutionPolicy Bypass -File $f
+eset-codex-config-windows.ps1"; powershell -NoProfile -ExecutionPolicy Bypass -File "$env:TEMP
+eset-codex-config-windows.ps1"
 ```
 
 Setelah reset, buka Codex lagi dan login dengan akun ChatGPT/OpenAI asli.
