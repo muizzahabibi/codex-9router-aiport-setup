@@ -108,8 +108,6 @@ Windows PowerShell one-line reset:
 
 ```powershell
 $f=Join-Path $env:TEMP 'reset-codex-config-windows.ps1'; iwr -UseBasicParsing 'https://raw.githubusercontent.com/muizzahabibi/codex-9router-aiport-setup/main/scripts/reset-codex-config-windows.ps1' -OutFile $f; powershell -NoProfile -ExecutionPolicy Bypass -File $f
-eset-codex-config-windows.ps1"; powershell -NoProfile -ExecutionPolicy Bypass -File "$env:TEMP
-eset-codex-config-windows.ps1"
 ```
 
 After resetting, open Codex again and log in with your native ChatGPT/OpenAI account.
